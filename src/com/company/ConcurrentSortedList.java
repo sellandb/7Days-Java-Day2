@@ -63,17 +63,19 @@ public class ConcurrentSortedList {
 
     public String toString(){
         Node current = head;
-        current.lock.lock();
+        ReentrantLock lock = current.lock;
         String output = "";
+        lock.lock();
         try {
             while (current != tail) {
                 output = output + current.value + " ";
-                current.lock.unlock();
                 current = current.next;
-                current.lock.lock();
+                lock.unlock();
+                lock = current.lock;
+                lock.lock();
             }
         } finally {
-            current.lock.unlock();
+            lock.unlock();
             output = output + current.value + " ";
         }
         return  output;
